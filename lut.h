@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #pragma once
@@ -27,7 +26,7 @@ struct lut_t {
 };
 
 errno_t init_lut(struct lut_t* lut);
-void exit_lut(struct lut_t* lut);
+void free_lut(struct lut_t* lut);
 
 void* get_objs(struct lut_t* lut);
 

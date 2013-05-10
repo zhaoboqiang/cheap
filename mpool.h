@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #pragma once
@@ -31,7 +30,7 @@ struct mpool_t {
 };
 
 errno_t init_mpool(struct mpool_t* mpool);
-void exit_mpool(struct mpool_t* mpool);
+void free_mpool(struct mpool_t* mpool);
 
 void purge_mpool(struct mpool_t* mpool);
 

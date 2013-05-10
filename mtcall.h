@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #pragma once
@@ -31,7 +30,7 @@ struct mtcall_t {
 };
 
 errno_t init_mtcall(struct mtcall_t* mtcall);
-void exit_mtcall(struct mtcall_t* mtcall);
+void free_mtcall(struct mtcall_t* mtcall);
 
 errno_t mtemit(struct mtcall_t* mtcall);
 errno_t mtdone(struct mtcall_t* mtcall);

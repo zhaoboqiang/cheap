@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 **
 ** This hash function comes from Brian Kernighan and Dennis Ritchie's book "The C Programming Language". 
 ** It is a simple hash function using a strange set of possible seeds which all constitute a pattern of 31....31...31 etc, 

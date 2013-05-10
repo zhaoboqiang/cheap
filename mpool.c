@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #include "./mpool.h"
@@ -75,7 +74,7 @@ LABEL_ERROR:
 	return r;
 }
 
-void exit_mpool(struct mpool_t* mpool) {
+void free_mpool(struct mpool_t* mpool) {
 	size_t alloc_object_count = 0;
 	size_t free_object_count = 0;
 	struct mpool_chunk_t* chunk;

@@ -1,6 +1,6 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
+**
 ** one pass scan, no string copy, two malloc, one file read
 */
 
@@ -35,7 +35,7 @@ struct ini_t {
 };
 
 errno_t init_ini(struct ini_t* ini);
-void exit_ini(struct ini_t* ini);
+void free_ini(struct ini_t* ini);
 
 errno_t load_ini(struct ini_t* ini, char const* filepath);
 

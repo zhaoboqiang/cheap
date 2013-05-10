@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #include "./ini.h"
@@ -39,7 +38,7 @@ LABEL_ERROR:
 	return r;
 }
 
-void exit_ini(struct ini_t* ini) {
+void free_ini(struct ini_t* ini) {
 	free_buffer(&ini->wbuffer);
 	free_buffer(&ini->rbuffer);
 }

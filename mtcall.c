@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #include "./mtcall.h"
@@ -136,7 +135,7 @@ LABEL_ERROR:
 	return r;
 }
 
-void exit_mtcall(struct mtcall_t* mtcall) {
+void free_mtcall(struct mtcall_t* mtcall) {
 	int i;
 	struct mtcall_opt_t* opt;
 

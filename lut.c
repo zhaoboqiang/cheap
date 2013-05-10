@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #include "./lut.h"
@@ -46,7 +45,7 @@ LABEL_ERROR:
 	return r;
 }
 
-void exit_lut(struct lut_t* lut) {
+void free_lut(struct lut_t* lut) {
 	if (lut->buffer) {
 		free(lut->buffer);
 	}

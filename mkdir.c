@@ -1,7 +1,7 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
+
 #include "./mkdir.h"
 #include <Shlwapi.h>
 #include <string.h>

@@ -1,6 +1,6 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
+**
 ** delimiter-separated values
 ** two pass scan, no string copy, two malloc, one file read
 ** little endian
@@ -62,7 +62,7 @@ struct dsv_t {
 };
 
 errno_t init_dsv(struct dsv_t* dsv);
-void exit_dsv(struct dsv_t* dsv);
+void free_dsv(struct dsv_t* dsv);
 
 errno_t load_dsv(struct dsv_t* dsv, char const* filepath);
 

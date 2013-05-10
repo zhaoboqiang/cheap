@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #include "./quadtree.h"
@@ -151,20 +150,20 @@ errno_t init_quadtree(struct quadtree_t* quadtree) {
 LABEL_ERROR:
 	if (r) {
 		if (init_data_pool_errno == 0) {
-			exit_mpool(&quadtree->data_pool);
+			free_mpool(&quadtree->data_pool);
 		}
 		if (init_node_pool_errno == 0) {
-			exit_mpool(&quadtree->node_pool);
+			free_mpool(&quadtree->node_pool);
 		}
 	}
 	return r;
 }
 
-void exit_quadtree(struct quadtree_t* quadtree) {
+void free_quadtree(struct quadtree_t* quadtree) {
 	purge_quadtree(quadtree);
 
-	exit_mpool(&quadtree->data_pool);
-	exit_mpool(&quadtree->node_pool);
+	free_mpool(&quadtree->data_pool);
+	free_mpool(&quadtree->node_pool);
 }
 
 static void purge_quadtree_data(struct quadtree_t* quadtree, struct quadtree_node_t* node) {

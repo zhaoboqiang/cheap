@@ -1,6 +1,5 @@
 /*
 ** Born to code, die for bugs! 
-** http://code.google.com/p/cheap/
 */
 
 #include "./dsv.h"
@@ -19,7 +18,7 @@ errno_t init_dsv(struct dsv_t* dsv) {
 	return 0;
 }
 
-void exit_dsv(struct dsv_t* dsv) {
+void free_dsv(struct dsv_t* dsv) {
 	free_buffer(&dsv->wbuffer);
 	free_buffer(&dsv->rbuffer);
 }
