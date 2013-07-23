@@ -13,7 +13,18 @@ unsigned int bkdr_hash(char const* str) {
 	unsigned int hash = 0;
  
 	while (*str) {
-		hash = hash * seed + (*str++);
+		hash = hash * seed + *str++;
+	}
+ 
+	return (hash & 0x7FFFFFFF);
+}
+
+unsigned int bkdr_lhash(char const* str, int len) {
+	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..
+	unsigned int hash = 0;
+ 
+	while (len-- >= 0) {
+		hash = hash * seed + *str++;
 	}
  
 	return (hash & 0x7FFFFFFF);

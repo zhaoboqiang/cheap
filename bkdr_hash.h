@@ -14,6 +14,8 @@ extern "C" {
 
 unsigned int bkdr_hash(char const* str);
 
+unsigned int bkdr_lhash(char const* str, int len);
+
 #ifdef __cplusplus
 }
 #endif
