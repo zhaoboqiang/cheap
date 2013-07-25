@@ -3,13 +3,18 @@
 */
 
 #include "stack_alloc.h"
+#include <assert.h>
+#include <stdio.h>
 
 void* stack_alloc(struct stack_alloc_t* stack_alloc, size_t size) {
 	void* data = NULL;
 	size = (size + 0x0F) & ~0x0F;
 
-	if (stack_alloc->offset + size < stack_alloc->size)
+	if (stack_alloc->offset + size > stack_alloc->size) {
+		printf("[stack pool] alloc failed %d + %d > %d\n", stack_alloc->offset, size, stack_alloc->size);
+		assert(0);
 		goto LABEL_ERROR;
+	}
 
 	data = (unsigned char*)stack_alloc->buffer + stack_alloc->offset;
 	stack_alloc->offset += size;
