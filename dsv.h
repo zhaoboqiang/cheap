@@ -1,5 +1,5 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 **
 ** delimiter-separated values
 ** two pass scan, no string copy, two malloc, one file read
@@ -9,6 +9,7 @@
 **		name	desc		c memory layout
 **		d		int32
 **		u		uint32
+**		x		hex
 **		f		float
 **		date	yyyymmdd	[y16m8d8]
 **		time	hh:mm:ss	[x8h8m8s8]
@@ -20,51 +21,52 @@
 
 #pragma once
 
-#include "./buffer.h"
+#include "buffer.h"
 #include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-enum DSV_COLUMN_TYPE {
-	DSV_COLUMN_TYPE_STRING,
-	DSV_COLUMN_TYPE_INT,
-	DSV_COLUMN_TYPE_UINT,
-	DSV_COLUMN_TYPE_FLOAT,
-	DSV_COLUMN_TYPE_TIME,
-	DSV_COLUMN_TYPE_DATE,
-	DSV_COLUMN_TYPE_RGBA,
-	DSV_COLUMN_TYPE_PATH,
-	DSV_COLUMN_TYPE_URL,
-};
+	enum DSV_COLUMN_TYPE {
+		DSV_COLUMN_TYPE_STRING,
+		DSV_COLUMN_TYPE_INT,
+		DSV_COLUMN_TYPE_UINT,
+		DSV_COLUMN_TYPE_HEX,
+		DSV_COLUMN_TYPE_FLOAT,
+		DSV_COLUMN_TYPE_TIME,
+		DSV_COLUMN_TYPE_DATE,
+		DSV_COLUMN_TYPE_RGBA,
+		DSV_COLUMN_TYPE_PATH,
+		DSV_COLUMN_TYPE_URL,
+	};
 
-struct dsv_column_t {
-	char const* name;
-	int type;
-};
+	struct dsv_column_t {
+		char const* name;
+		int type;
+	};
 
-struct dsv_opt_t {
-	char delimiter;
-};
+	struct dsv_opt_t {
+		char delimiter;
+	};
 
-struct dsv_t {
-	struct dsv_opt_t* opt;
+	struct dsv_t {
+		struct dsv_opt_t* opt;
 
-	size_t column;
-	size_t row;
-	
-	struct dsv_column_t* title;
-	void* data;
+		uint32_t column;
+		uint32_t row;
 
-	struct buffer_t rbuffer;
-	struct buffer_t wbuffer;
-};
+		struct dsv_column_t* title;
+		void* data;
 
-errno_t init_dsv(struct dsv_t* dsv);
-void free_dsv(struct dsv_t* dsv);
+		struct buffer_t rbuffer;
+		struct buffer_t wbuffer;
+	};
 
-errno_t load_dsv(struct dsv_t* dsv, char const* filepath);
+	errno_t init_dsv(struct dsv_t* dsv);
+	void free_dsv(struct dsv_t* dsv);
+
+	errno_t load_dsv(struct dsv_t* dsv, char const* filepath);
 
 #ifdef __cplusplus
 }
@@ -84,7 +86,7 @@ errno_t load_dsv(struct dsv_t* dsv, char const* filepath);
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

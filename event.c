@@ -1,48 +1,47 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
-
-#include "./event.h"
+#include "event.h"
 #include <assert.h>
 
-void hook_event(struct event_source_t* event_source, struct event_receiver_t* receiver) {
+void hook_event(struct event_t* event, struct event_receiver_t* receiver) {
 #ifndef NDEBUG
 	struct event_receiver_t* current;
 
-	for (current = event_source->head; current; current = current->next) {
+	for (current = event->receiver; current; current = current->next) {
 		assert(current != receiver);
 	}
 #endif
 
-	receiver->next = event_source->head;
-	event_source->head = receiver;
+	receiver->next = event->receiver;
+	event->receiver = receiver;
 }
 
-void unhook_event(struct event_source_t* event_source, struct event_receiver_t* receiver) {
+void unhook_event(struct event_t* event, struct event_receiver_t* receiver) {
 	struct event_receiver_t* current;
 	struct event_receiver_t* previous;
 
-    if (event_source->head == receiver) {
-		event_source->head = receiver->next;
-        return;
-    }
+	if (event->receiver == receiver) {
+		event->receiver = receiver->next;
+		return;
+	}
 
-    previous = event_source->head;
+	previous = event->receiver;
 
-    for (current = previous->next; current; current = current->next) {
-        if (current == receiver) {
-            previous->next = current->next;
-            return;
-        }
-        previous = current;
-    }
+	for (current = previous->next; current; current = current->next) {
+		if (current == receiver) {
+			previous->next = current->next;
+			return;
+		}
+		previous = current;
+	}
 }
 
-void raise_event(struct event_source_t* event_source, void* source, void* args) {
-	struct event_receiver_t* current;
+void raise_event(struct event_t* event, void* source, void* args) {
+	struct event_receiver_t* receiver;
 
-	for (current = event_source->head; current; current = current->next) {
-		(*current->handler)(source, current, args);
+	for (receiver = event->receiver; receiver; receiver = receiver->next) {
+		(*receiver->handler)(source, receiver, args);
 	}
 }
 
@@ -60,7 +59,7 @@ void raise_event(struct event_source_t* event_source, void* source, void* args) 
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

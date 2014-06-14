@@ -6,7 +6,7 @@
 ** it seems to be very similar to the DJB hash function.
 */
 
-#include "./bkdr_hash.h"
+#include "bkdr_hash.h"
 
 unsigned int bkdr_hash(char const* str) {
 	unsigned int seed = 131; // 31 131 1313 13131 131313 etc..

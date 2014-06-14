@@ -1,53 +1,65 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
-
-#include "./mkdir.h"
-#include <Shlwapi.h>
+#include "path_stack.h"
 #include <string.h>
+#include <assert.h>
 
-#pragma comment(lib, "Shlwapi.lib")
+struct path_stack_t g_path_stack;
 
-errno_t mkdir(wchar_t const* path) {
+errno_t change_root_path(struct path_stack_t* path_stack, char const* root_path) {
 	errno_t r = -1;
 	size_t length;
-	wchar_t const* src;
-	wchar_t* dst;
-	wchar_t* dir = NULL;
+	
+	path_stack->level = 0;
 
-	if (PathIsRelativeW(path))
+	length = strlen(root_path);
+	if (length >= PATH_BUFFER_LENGTH)
 		goto LABEL_ERROR;
 
-	length = wcslen(path);
-	if (length < 4)
-		goto LABEL_ERROR;
+	path_stack->length[path_stack->level] = length;
 
-	dir = malloc((length + 1) * sizeof(wchar_t));
-	if (dir == NULL)
-		goto LABEL_ERROR;
-
-	src = path;
-	dst = dir;
-
-	while (*src) {
-		if (*src == L'\\' || *src == L'/') {
-			if (*(src - 1) != L':') {
-				CreateDirectoryW(dir, NULL);
-			}
-		}
-		*dst++ = *src++;
-		*dst = L'\0';
-	}
-
-	CreateDirectoryW(dir, NULL);
+	strcpy(path_stack->path, root_path);
 
 	r = 0;
 LABEL_ERROR:
-	if (dir)
-		free(dir);
 	return r;
 }
 
+errno_t push_path(struct path_stack_t* path_stack, char const* dir) {
+	errno_t r = -1;
+	size_t up_level_length;
+	size_t length;
+
+	assert(path_stack->level < PATH_STACK_LEVEL);
+	assert(strchr(dir, '/') == NULL);
+	assert(strchr(dir, '\\') == NULL);
+
+	length = strlen(dir);
+	
+	up_level_length = path_stack->length[path_stack->level];
+
+	length += up_level_length + 1;
+	if (length > PATH_BUFFER_LENGTH)
+		goto LABEL_ERROR;
+
+	strcpy(path_stack->path + up_level_length, dir);
+	
+	path_stack->path[up_level_length] = '/';
+	path_stack->path[up_level_length + 1] = '\0';
+
+	path_stack->length[++path_stack->level] = length;
+
+	r = 0;
+LABEL_ERROR:
+	return r;
+}
+
+void pop_path(struct path_stack_t* path_stack) {
+	assert(path_stack->level > 0);
+
+	path_stack->path[path_stack->length[path_stack->level--]] = '\0';
+}
 
 /*
 ** MIT License
@@ -63,7 +75,7 @@ LABEL_ERROR:
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

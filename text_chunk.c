@@ -2,33 +2,46 @@
 ** Born to code, die for bugs! 
 */
 
-#include "./text_chunk.h"
+#include "text_chunk.h"
+#include "safe_free.h"
 #include <assert.h>
 #include <string.h>
 
-void init_text_chunk(text_chunk_t* text_chunk, char* text, size_t size) {
-	assert(text_chunk);
-	assert(text);
-	assert(size);
+errno_t alloc_text_chunk(struct text_chunk_t* text_chunk, uint32_t size) {
+	errno_t r = -1;
+	char* text = NULL;
 
-	text_chunk->text = text;
+	text = malloc(size);
+	if (text == NULL)
+		goto LABEL_ERROR;
+
 	text_chunk->size = size;
 	text_chunk->offset = 0;
+	text_chunk->text = text;
+	text = NULL;
 
-	text_chunk->text[0] = '\0';
+	r = 0;
+LABEL_ERROR:
+	SAFE_FREE(text);
+	return r;
 }
 
-size_t put_text(text_chunk_t* text_chunk, char const* text) {
+void free_text_chunk(struct text_chunk_t* text_chunk) {
+	SAFE_FREE(text_chunk->text);
+}
+
+uint32_t put_text(struct text_chunk_t* text_chunk, char const* text) {
 	int offset;
+	uint32_t size;
 
 	assert(text_chunk);
 	assert(text);
 
 	offset = get_text_offset(text_chunk, text);
 	if (offset != -1) {
-		return (size_t)offset;
+		return (uint32_t)offset;
 	} else {
-		size_t size = strlen(text) + 1;
+		size = (uint32_t)strlen(text) + 1;
 
 		assert(text_chunk->offset + size < text_chunk->size);
 
@@ -38,26 +51,26 @@ size_t put_text(text_chunk_t* text_chunk, char const* text) {
 
 		text_chunk->offset += size;
 
-		return (size_t)offset;
+		return (uint32_t)offset;
 	}
 }
 
-int get_text_offset(text_chunk_t* text_chunk, char const* text) {
-	size_t size;
-	size_t size_iterator;
+int get_text_offset(struct text_chunk_t* text_chunk, char const* text) {
+	uint32_t size;
+	uint32_t size_iterator;
 	char const* text_iterator;
 
 	assert(text_chunk);
 	assert(text);
 
-	size = strlen(text);
+	size = (uint32_t)strlen(text);
 
 	assert(size > 0);
 
 	text_iterator = text_chunk->text;
 
 	do {
-		size_iterator = strlen(text_iterator);
+		size_iterator = (uint32_t)strlen(text_iterator);
 		if (size == size_iterator && strcmp(text, text_iterator) == 0) {
 			return (int)(text_iterator - text_chunk->text);
 		}
@@ -67,7 +80,7 @@ int get_text_offset(text_chunk_t* text_chunk, char const* text) {
 	return -1;
 }
 
-char const* get_text(text_chunk_t* text_chunk, size_t offset) {
+char const* get_text(struct text_chunk_t* text_chunk, size_t offset) {
 	assert(text_chunk);
 
 	return text_chunk->text + offset;

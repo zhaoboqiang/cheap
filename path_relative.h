@@ -5,29 +5,12 @@
 #pragma once
 
 #include <stddef.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
-
-	void* data;
-	uint32_t size;
-};
-
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
-
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
-
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
-
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
+	errno_t get_relative_path(char* rel_path, size_t rel_path_len, char const* sub_path, char const* rel_to_sub_dir);
 
 #ifdef __cplusplus
 }

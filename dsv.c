@@ -1,19 +1,26 @@
 /*
 ** Born to code, die for bugs! 
 */
-
-#include "./dsv.h"
-#include "./split_text.h"
+#include "dsv.h"
+#include "split_text.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+
+static struct dsv_opt_t g_dsv_opt;
 
 errno_t init_dsv(struct dsv_t* dsv) {
 	assert(dsv->column == 0);
 	assert(dsv->row == 0);
 	assert(dsv->title == NULL);
 	assert(dsv->data == NULL);
+
+	if (dsv->opt == NULL) {
+		dsv->opt = &g_dsv_opt;
+
+		g_dsv_opt.delimiter = '\t';
+	}
 
 	return 0;
 }
@@ -23,10 +30,10 @@ void free_dsv(struct dsv_t* dsv) {
 	free_buffer(&dsv->rbuffer);
 }
 
-static void get_dsv_extent(size_t* cx_cell, size_t* cy_cell, char* text, size_t size, char delimiter) {
-	size_t column = 0;
-	size_t row = 0;
-	size_t offset;
+static void get_dsv_extent(uint32_t* cx_cell, uint32_t* cy_cell, char* text, size_t size, char delimiter) {
+	uint32_t column = 0;
+	uint32_t row = 0;
+	uint32_t offset;
 	char c;
 
 	/* calc table column */
@@ -85,28 +92,32 @@ static void get_dsv_extent(size_t* cx_cell, size_t* cy_cell, char* text, size_t 
 	}
 
 	*cx_cell = column;
-	*cy_cell = row;
+	*cy_cell = row - 1;
 }
 
-static errno_t load_cell(struct dsv_t* dsv, char* text, size_t size, size_t column, size_t row) {
+static errno_t load_cell(struct dsv_t* dsv, char* text, uint32_t size, uint32_t column, uint32_t row) {
 	errno_t r = -1;
 	struct dsv_column_t* title;
-	char* cell;
+	char** cell;
 	unsigned long value[4];
 
 	title = dsv->title + column;
-	cell = (char*)dsv->data + row * dsv->column + column;
+	cell = (char**)dsv->data + row * dsv->column + column;
 
-	switch (title->type)
-	{
+	switch (title->type) {
 	case DSV_COLUMN_TYPE_STRING:
-		cell = text;
+		*cell = text;
 		break;
 	case DSV_COLUMN_TYPE_INT:
 		*((int*)cell) = atoi(text);
 		break;
 	case DSV_COLUMN_TYPE_UINT:
+		*cell = 0;
 		sscanf_s(text, "%u", cell);
+		break;
+	case DSV_COLUMN_TYPE_HEX:
+		*cell = 0;
+		sscanf_s(text, "%x", (int*)cell);
 		break;
 	case DSV_COLUMN_TYPE_FLOAT:
 		*((float*)cell) = (float)atof(text);
@@ -156,10 +167,10 @@ static errno_t load_cell(struct dsv_t* dsv, char* text, size_t size, size_t colu
 		*((unsigned long*)cell) = ((value[0] << 16) | (value[1] << 8) | value[2] | (value[3] << 24));
 		break;
 	case DSV_COLUMN_TYPE_PATH:
-		cell = text;
+		*cell = text;
 		break;
 	case DSV_COLUMN_TYPE_URL:
-		cell = text;
+		*cell = text;
 		break;
 	default:
 		assert(0);
@@ -171,12 +182,12 @@ LABEL_ERROR:
 	return r;
 }
 
-static errno_t load_row(struct dsv_t* dsv, char* text, size_t size, size_t row) {
+static errno_t load_row(struct dsv_t* dsv, char* text, uint32_t size, uint32_t row) {
 	errno_t r = -1;
-	size_t column;
-	size_t offset;
-	size_t cell_length;
-	size_t delimiter_length;
+	uint32_t column;
+	uint32_t offset;
+	uint32_t cell_length;
+	uint32_t delimiter_length;
 
 	column = 0;
 	offset = 0;
@@ -192,12 +203,16 @@ static errno_t load_row(struct dsv_t* dsv, char* text, size_t size, size_t row) 
 		++column;
 	}
 
+	for (; column < dsv->column; ++column) {
+		*((char**)dsv->data + row * dsv->column + column) = 0;
+	}
+
 	r = 0;
 LABEL_ERROR:
 	return r;
 }
 
-static errno_t load_title_cell(struct dsv_column_t* title_cell, char* text, size_t size) {
+static errno_t load_title_cell(struct dsv_column_t* title_cell, char* text, uint32_t size) {
 	errno_t r = -1;
 	int type;
 
@@ -220,6 +235,8 @@ static errno_t load_title_cell(struct dsv_column_t* title_cell, char* text, size
 		type = DSV_COLUMN_TYPE_INT;
 	} else if (strstr(text, ":u")) {
 		type = DSV_COLUMN_TYPE_UINT;
+	} else if (strstr(text, ":x")) {
+		type = DSV_COLUMN_TYPE_HEX;
 	} else if (strstr(text, ":f")) {
 		type = DSV_COLUMN_TYPE_FLOAT;
 	} else {
@@ -234,11 +251,11 @@ LABEL_ERROR:
 	return r;
 }
 
-static errno_t load_title(struct dsv_t* dsv, char* text, size_t size) {
+static errno_t load_title(struct dsv_t* dsv, char* text, uint32_t size) {
 	errno_t r = -1;
-	size_t offset;
-	size_t cell_length;
-	size_t delimiter_length;
+	uint32_t offset;
+	uint32_t cell_length;
+	uint32_t delimiter_length;
 	struct dsv_column_t* title;
 
 	title = dsv->title;
@@ -266,12 +283,12 @@ LABEL_ERROR:
 	return r;
 }
 
-static errno_t load_dsv_text(struct dsv_t* dsv, char* text, size_t size) {
+static errno_t load_dsv_text(struct dsv_t* dsv, char* text, uint32_t size) {
 	errno_t r = -1;
-	size_t offset;
-	size_t delimiter_length;
-	size_t row_length;
-	size_t row;
+	uint32_t offset;
+	uint32_t delimiter_length;
+	uint32_t row_length;
+	uint32_t row;
 
 	offset = 0;
 
@@ -312,7 +329,7 @@ errno_t load_dsv(struct dsv_t* dsv, char const* filepath) {
 	errno_t load_rbuffer_errno = -1;
 	errno_t alloc_wbuffer_errno = -1;
 	char* text;
-	size_t size;
+	uint32_t size;
 
 	assert(dsv->rbuffer.data == NULL);
 	assert(dsv->rbuffer.size == 0);

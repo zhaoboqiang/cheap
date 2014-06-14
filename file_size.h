@@ -5,12 +5,13 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-size_t get_file_size(FILE* fp);
+	uint32_t get_file_size(FILE* fp);
 
 #ifdef __cplusplus
 }

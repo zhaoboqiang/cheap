@@ -2,7 +2,7 @@
 ** Born to code, die for bugs! 
 */
 
-#include "./ini.h"
+#include "ini.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -278,7 +278,7 @@ errno_t load_ini(struct ini_t* ini, char const* filepath) {
 	}
 
 	if (ini->wbuffer.size == 0) {
-		ini->wbuffer.size = ini->rbuffer.size;
+		ini->wbuffer.size = ini->rbuffer.size * 2;
 
 		assert(ini->wbuffer.data == NULL);
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "./buffer.h"
+#include "buffer.h"
 #include <stddef.h>
 
 #ifdef __cplusplus

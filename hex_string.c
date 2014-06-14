@@ -1,38 +1,32 @@
 /*
 ** Born to code, die for bugs! 
 */
+#include "hex_string.h"
+#include <ctype.h>
+#include <assert.h>
 
-#pragma once
+#define LOWERCASE(c) ((c) | ' ')
 
-#include <stddef.h>
-#include <stdint.h>
+uint32_t hex_utf8_to_uint32(char const* text, int length) {
+	uint32_t n = 0;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+	while (length--) {
+		if (isdigit(*text)) {
+			n = n * 16 + (*text++ - '0');
+			continue;
+		}
 
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
+		if (isalpha(*text)) {
+			n = n * 16 + (LOWERCASE(*text++) - 'a' + 10);
+			continue;
+		}
 
-	void* data;
-	uint32_t size;
-};
+		assert(0);
+		break;
+	}
 
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
-
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
-
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
-
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
-
-#ifdef __cplusplus
+	return n;
 }
-#endif
-
 /*
 ** MIT License
 **

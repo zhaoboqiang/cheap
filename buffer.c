@@ -2,12 +2,13 @@
 ** Born to code, die for bugs! 
 */
 
-#include "./buffer.h"
-#include "./file_size.h"
+#include "buffer.h"
+#include "file_size.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <malloc.h>
+#include <string.h>
 
 errno_t alloc_buffer(struct buffer_t* buffer) {
     errno_t r = -1;
@@ -40,25 +41,23 @@ void free_buffer(struct buffer_t* buffer) {
     assert(buffer);
     assert(buffer->init_data);
 
-    free(buffer->init_data);
-
-	buffer->init_data = NULL;
-	buffer->init_size = 0;
-
-    buffer->data = NULL;
-    buffer->size = 0;
+	if (buffer->init_data) {
+		free(buffer->init_data);
+	}
 }
 
-void* seek_buffer(struct buffer_t* buffer, size_t offset) {
+void* seek_buffer(struct buffer_t* buffer, uint32_t offset) {
     void* data = NULL;
 
     assert(buffer);
     assert(buffer->data);
     assert(buffer->size >= offset);
 
-	if (buffer->size < offset) {
+	if (offset == 0)
 		return NULL;
-	}
+
+	if (buffer->size < offset)
+		return NULL;
 
     data = buffer->data;
 
@@ -95,8 +94,8 @@ errno_t load_buffer(struct buffer_t* buffer, char const* filepath) {
     errno_t r = -1;
 	errno_t alloc_buffer_errno = -1;
     FILE* fp = NULL;
-    size_t read_count;
-    size_t size;
+	uint32_t read_count;
+	uint32_t size;
     
     assert(buffer);
     assert(buffer->data == NULL);
@@ -105,7 +104,6 @@ errno_t load_buffer(struct buffer_t* buffer, char const* filepath) {
     assert(buffer->init_size == 0);
 
 	if (fopen_s(&fp, filepath, "rb")) {
-        assert(0);
         goto LABEL_ERROR;
     }
 
@@ -123,7 +121,7 @@ errno_t load_buffer(struct buffer_t* buffer, char const* filepath) {
 		goto LABEL_ERROR;
 	}
 
-    read_count = fread_s(buffer->data, size, size, 1, fp);
+    read_count = (uint32_t)fread_s(buffer->data, size, size, 1, fp);
     if (read_count != 1) {
         assert(0);
         goto LABEL_ERROR;
@@ -142,10 +140,35 @@ LABEL_ERROR:
     return r;
 }
 
+static errno_t is_file_changed(struct buffer_t* buffer, char const* filepath) {
+	errno_t r = -1;
+	errno_t load_file_buffer_errno = -1;
+	struct buffer_t file_buffer = { 0 };
+
+	load_file_buffer_errno = load_buffer(&file_buffer, filepath);
+	if (load_file_buffer_errno)
+		goto LABEL_ERROR;
+
+	if (file_buffer.size != buffer->init_size - buffer->size)
+		goto LABEL_ERROR;
+
+	if (memcmp(file_buffer.data, buffer->init_data, file_buffer.size))
+		goto LABEL_ERROR;
+
+	r = 0;
+LABEL_ERROR:
+	if (load_file_buffer_errno == 0)
+		free_buffer(&file_buffer);
+	return r;
+}
+
 errno_t save_buffer(struct buffer_t* buffer, char const* filepath) {
     errno_t r = -1;
     FILE* fp;
-    
+
+	if (!is_file_changed(buffer, filepath))
+		goto LABEL_EXIT;
+
     if (fopen_s(&fp, filepath, "wb")) {
 		assert(0);
 		goto LABEL_ERROR;
@@ -154,6 +177,7 @@ errno_t save_buffer(struct buffer_t* buffer, char const* filepath) {
 	fwrite(buffer->init_data, buffer->init_size - buffer->size, 1, fp);
 	fclose(fp);
 
+LABEL_EXIT:
 	r = 0;
 LABEL_ERROR:
     return r;

@@ -1,37 +1,54 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
+#include "path_normalize.h"
+#include <assert.h>
 
-#pragma once
+int is_path_normalize(char const* path) {
+	char c;
 
-#include <stddef.h>
-#include <stdint.h>
+	if (path == NULL)
+		return 0;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+	for (;;) {
+		c = *path;
 
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
+		if (c == 0)
+			break;
 
-	void* data;
-	uint32_t size;
-};
+		if (c == '\\')
+			return 0;
 
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
+		++path;
+	}
 
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
-
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
-
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
-
-#ifdef __cplusplus
+	return 1;
 }
-#endif
+
+void normalize_path(char* path, size_t count) {
+	size_t index;
+	char c;
+
+	assert(path);
+
+	for (index = 0; index < count; ++index) {
+		c = path[index];
+
+		if (c == '\0') {
+			break;
+		}
+		if (c == '\\') {
+			path[index] = '/';
+		}
+	}
+
+	if (index > 0 && path[index - 1] != '/') {
+		assert(index + 1 < count);
+
+		path[index] = '/';
+		path[index + 1] = '\0';
+	}
+}
 
 /*
 ** MIT License
@@ -47,7 +64,7 @@ errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

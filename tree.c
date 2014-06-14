@@ -1,37 +1,54 @@
 /*
 ** Born to code, die for bugs! 
 */
+#include "tree.h"
+#include "safe_free.h"
 
-#pragma once
+void insert_tree(struct tree_t* parent_tree, struct tree_t* tree) {
+	struct tree_t* sibling;
 
-#include <stddef.h>
-#include <stdint.h>
+	if (tree->parent) {
+		remove_tree(tree->parent, tree);
+	}
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
-
-	void* data;
-	uint32_t size;
-};
-
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
-
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
-
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
-
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
-
-#ifdef __cplusplus
+	if (parent_tree->first_child) {
+		sibling = parent_tree->first_child;
+		while (sibling->sibling != NULL) {
+			sibling = sibling->sibling;
+		}
+		sibling->sibling = tree;
+		tree->parent = sibling->parent;
+	} else {
+		parent_tree->first_child = tree;
+		tree->parent = parent_tree;
+	}
 }
-#endif
+
+void remove_tree(struct tree_t* parent_tree, struct tree_t* tree) {
+	struct tree_t* sibling;
+
+	if (parent_tree->first_child == NULL)
+		goto LABEL_ERROR;
+
+	if (parent_tree->first_child == tree) {
+		parent_tree->first_child = parent_tree->first_child->sibling;
+	} else {
+		sibling = parent_tree->first_child;
+		while (sibling->sibling != NULL) {
+			if (sibling->sibling == tree) {
+				sibling->sibling = sibling->sibling->sibling;
+				break;
+			}
+			sibling = sibling->sibling;
+		}
+	}
+
+	tree->parent = NULL;
+	tree->sibling = NULL;
+
+LABEL_ERROR:
+	return;
+}
 
 /*
 ** MIT License

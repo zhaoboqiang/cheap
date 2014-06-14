@@ -1,37 +1,37 @@
 /*
 ** Born to code, die for bugs! 
 */
+#include "file_extension.h"
+#include <string.h>
 
-#pragma once
+errno_t strip_file_extension(char* filepath) {
+	errno_t r = -1;
+	char* delimiter;
 
-#include <stddef.h>
-#include <stdint.h>
+	delimiter = strrchr(filepath, '.');
+	if (delimiter == NULL)
+		goto LABEL_ERROR;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+	*delimiter = 0;
 
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
-
-	void* data;
-	uint32_t size;
-};
-
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
-
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
-
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
-
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
-
-#ifdef __cplusplus
+	r = 0;
+LABEL_ERROR:
+	return r;
 }
-#endif
+
+errno_t substitute_file_extension(char* filepath, size_t length, char const* extension) {
+	errno_t r = -1;
+
+	if (strip_file_extension(filepath))
+		goto LABEL_ERROR;
+
+	if (strcat_s(filepath, length, extension))
+		goto LABEL_ERROR;
+
+	r = 0;
+LABEL_ERROR:
+	return r;
+}
 
 /*
 ** MIT License

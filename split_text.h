@@ -1,17 +1,18 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
 
 #pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void split_line(size_t* split_length, size_t* delimiter_length, char* text, size_t size, char delimiter);
-void split_text(size_t* split_length, size_t* delimiter_length, char* text, size_t size, char delimiter);
+	void split_line(uint32_t* split_length, uint32_t* delimiter_length, char* text, size_t size, char delimiter);
+	void split_text(uint32_t* split_length, uint32_t* delimiter_length, char* text, size_t size, char delimiter);
 
 #ifdef __cplusplus
 }
@@ -31,7 +32,7 @@ void split_text(size_t* split_length, size_t* delimiter_length, char* text, size
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

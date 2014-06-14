@@ -1,33 +1,31 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
 
 #pragma once
 
 #include <stddef.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
+	enum { PATH_STACK_LEVEL = 4 };
+	enum { PATH_BUFFER_LENGTH = 256 };
 
-	void* data;
-	uint32_t size;
-};
+	struct path_stack_t {
+		char path[PATH_BUFFER_LENGTH];
 
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
+		size_t length[PATH_STACK_LEVEL];
+		int level;
+	};
 
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
+	extern struct path_stack_t g_path_stack;
 
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
+	errno_t change_root_path(struct path_stack_t* path_stack, char const* root_path);
 
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
+	errno_t push_path(struct path_stack_t* path_stack, char const* dir);
+	void pop_path(struct path_stack_t* path_stack);
 
 #ifdef __cplusplus
 }
@@ -47,7 +45,7 @@ errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -56,4 +54,3 @@ errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
 ** OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ** THE SOFTWARE.
 */
-

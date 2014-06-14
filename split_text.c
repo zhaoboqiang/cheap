@@ -1,12 +1,11 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
-
-#include "./split_text.h"
+#include "split_text.h"
 #include <assert.h>
 
-void split_line(size_t* split_length, size_t* delimiter_length, char* text, size_t size, char delimiter) {
-	size_t offset;
+void split_line(size_t* split_length, uint32_t* delimiter_length, char* text, uint32_t size, char delimiter) {
+	uint32_t offset;
 	char c;
 
 	for (offset = 0; offset < size; ++offset) {
@@ -45,8 +44,8 @@ void split_line(size_t* split_length, size_t* delimiter_length, char* text, size
 	*delimiter_length = 0;
 }
 
-void split_text(size_t* split_length, size_t* delimiter_length, char* text, size_t size, char delimiter) {
-	size_t offset;
+void split_text(uint32_t* split_length, uint32_t* delimiter_length, char* text, uint32_t size, char delimiter) {
+	uint32_t offset;
 	char c;
 
 	for (offset = 0; offset < size; ++offset) {
@@ -88,7 +87,7 @@ void split_text(size_t* split_length, size_t* delimiter_length, char* text, size
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

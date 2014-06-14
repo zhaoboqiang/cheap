@@ -5,29 +5,19 @@
 #pragma once
 
 #include <stddef.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct buffer_t {
-	void* init_data;
-	uint32_t init_size;
+	struct tree_t {
+		struct tree_t* parent;
+		struct tree_t* first_child;
+		struct tree_t* sibling;
+	};
 
-	void* data;
-	uint32_t size;
-};
-
-errno_t alloc_buffer(struct buffer_t* buffer);
-void free_buffer(struct buffer_t* buffer);
-
-void* seek_buffer(struct buffer_t* buffer, uint32_t offset);
-
-errno_t printf_buffer(struct buffer_t* buffer, char const* fmt, ...);
-
-errno_t load_buffer(struct buffer_t* buffer, char const* filepath);
-errno_t save_buffer(struct buffer_t* buffer, char const* filepath);
+	void insert_tree(struct tree_t* parent_tree, struct tree_t* tree);
+	void remove_tree(struct tree_t* parent_tree, struct tree_t* tree);
 
 #ifdef __cplusplus
 }

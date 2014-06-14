@@ -8,6 +8,10 @@
 #include <sys/time.h>
 #endif
 
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
+
 static uint64_t g_startTick;
 
 errno_t init_tick_count() {
@@ -17,7 +21,7 @@ errno_t init_tick_count() {
 	return 0;
 }
 
-uint64_t get_tick_count() {
+uint32_t get_tick_count() {
 #if defined(__linux) || defined(__APPLE__)
 	uint64_t tick = 0;
 	timeval timeVal;
@@ -28,11 +32,11 @@ uint64_t get_tick_count() {
 	tick = ((uint64_t)timeVal.tv_sec) * 1000 + timeVal.tv_usec / 1000;
 
 LABEL_ERROR:
-	return tick;
+	return (uint32_t)tick;
 #endif
 
 #ifdef _MSC_VER
-	return GetTickCount64() - g_startTick;
+	return (uint32_t)(GetTickCount64() - g_startTick);
 #endif
 }
 

@@ -2,7 +2,7 @@
 ** Born to code, die for bugs! 
 */
 
-#include "./mpool.h"
+#include "mpool.h"
 #include <assert.h>
 #include <stdio.h>
 #include <malloc.h>

@@ -5,6 +5,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,17 +13,18 @@ extern "C" {
 
 struct text_chunk_t {
 	char* text;
-	size_t size;
+	uint32_t size;
 
-	size_t offset;
+	uint32_t offset;
 };
 
-void init_text_chunk(text_chunk_t* text_chunk, char* text, size_t size);
+errno_t alloc_text_chunk(struct text_chunk_t* text_chunk, uint32_t size);
+void free_text_chunk(struct text_chunk_t* text_chunk);
 
-size_t put_text(text_chunk_t* text_chunk, char const* text);
+uint32_t put_text(struct text_chunk_t* text_chunk, char const* text);
 
-int get_text_offset(text_chunk_t* text_chunk, char const* text);
-char const* get_text(text_chunk_t* text_chunk, size_t offset);
+int get_text_offset(struct text_chunk_t* text_chunk, char const* text);
+char const* get_text(struct text_chunk_t* text_chunk, size_t offset);
 
 #ifdef __cplusplus
 }

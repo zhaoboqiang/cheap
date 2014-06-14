@@ -2,9 +2,9 @@
 ** Born to code, die for bugs! 
 */
 
-#include "./file_size.h"
+#include "file_size.h"
 
-size_t get_file_size(FILE* fp) {
+uint32_t get_file_size(FILE* fp) {
     int pos;
     int end;
 

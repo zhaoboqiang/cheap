@@ -4,15 +4,15 @@
 
 #pragma once
 
+#include <stddef.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stddef.h>
-#include <stdint.h>
-
 errno_t init_tick_count();
-uint64_t get_tick_count();
+uint32_t get_tick_count();
 
 #ifdef __cplusplus
 }

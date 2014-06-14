@@ -1,28 +1,31 @@
 /*
-** Born to code, die for bugs! 
+** Born to code, die for bugs!
 */
 
 #pragma once
+
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+	typedef void(*event_handler_t)(void* source, struct event_receiver_t* receiver, void* args);
 
-struct event_receiver_t {
-	struct event_receiver_t* next;
+	struct event_receiver_t {
+		struct event_receiver_t* next;
 
-	void (*handler)(void* source, struct event_receiver_t* receiver, void* args);
-};
+		event_handler_t handler;
+	};
 
-struct event_source_t {
-	struct event_receiver_t* head;
-};
+	struct event_t {
+		struct event_receiver_t* receiver;
+	};
 
-void hook_event(struct event_source_t* event_source, struct event_receiver_t* receiver);
-void unhook_event(struct event_source_t* event_source, struct event_receiver_t* receiver);
+	void hook_event(struct event_t* event, struct event_receiver_t* receiver);
+	void unhook_event(struct event_t* event, struct event_receiver_t* receiver);
 
-void raise_event(struct event_source_t* event_source, void* source, void* args);
+	void raise_event(struct event_t* event, void* source, void* args);
 
 #ifdef __cplusplus
 }
@@ -42,7 +45,7 @@ void raise_event(struct event_source_t* event_source, void* source, void* args);
 **
 ** The above copyright notice and this permission notice shall be included in
 ** all copies or substantial portions of the Software.
-** 
+**
 ** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 ** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 ** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
