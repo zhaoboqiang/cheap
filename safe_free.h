@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <malloc.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
