@@ -10,14 +10,14 @@
 extern "C" {
 #endif
 
-	struct tree_t {
-		struct tree_t* parent;
-		struct tree_t* first_child;
-		struct tree_t* sibling;
+	struct tree {
+		struct tree* parent;
+		struct tree* first_child;
+		struct tree* sibling;
 	};
 
-	void insert_tree(struct tree_t* parent_tree, struct tree_t* tree);
-	void remove_tree(struct tree_t* parent_tree, struct tree_t* tree);
+	void insert_tree(struct tree* parent_tree, struct tree* tree);
+	void remove_tree(struct tree* parent_tree, struct tree* tree);
 
 #ifdef __cplusplus
 }

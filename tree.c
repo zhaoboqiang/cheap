@@ -4,8 +4,8 @@
 #include "tree.h"
 #include "safe_free.h"
 
-void insert_tree(struct tree_t* parent_tree, struct tree_t* tree) {
-	struct tree_t* sibling;
+void insert_tree(struct tree* parent_tree, struct tree* tree) {
+	struct tree* sibling;
 
 	if (tree->parent) {
 		remove_tree(tree->parent, tree);
@@ -24,8 +24,8 @@ void insert_tree(struct tree_t* parent_tree, struct tree_t* tree) {
 	}
 }
 
-void remove_tree(struct tree_t* parent_tree, struct tree_t* tree) {
-	struct tree_t* sibling;
+void remove_tree(struct tree* parent_tree, struct tree* tree) {
+	struct tree* sibling;
 
 	if (parent_tree->first_child == NULL)
 		goto LABEL_ERROR;
