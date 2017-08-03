@@ -15,7 +15,7 @@ typedef struct tagTHREADNAME_INFO
 #pragma pack(pop)  
 #endif
 
-errno_t set_self_thread_name(char const* name)
+int set_self_thread_name(char const* name)
 {
 	const DWORD MS_VC_EXCEPTION = 0x406D1388;  
     
@@ -39,9 +39,10 @@ errno_t set_self_thread_name(char const* name)
 #endif
 
 #ifdef __linux__
+#define _GNU_SOURCE
 #include <pthread.h>
 
-errno_t set_self_thread_name(char const* name)
+int set_self_thread_name(char const* name)
 {
     return pthread_setname_np(pthread_self(), name);
 }
