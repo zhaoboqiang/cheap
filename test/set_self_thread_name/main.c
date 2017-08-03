@@ -1,4 +1,4 @@
-#include "../src/set_self_thread_name.h"
+#include "../../src/set_self_thread_name.h"
 
 int main(int argc, char* argv[])
 {
