@@ -1,0 +1,1 @@
+add_subdirectory(set_self_thread_name)
