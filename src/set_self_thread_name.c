@@ -47,3 +47,12 @@ int set_self_thread_name(char const* name)
     return pthread_setname_np(pthread_self(), name);
 }
 #endif
+
+#ifdef __APPLE__
+#include <pthread.h>
+
+int set_self_thread_name(char const* name)
+{
+    return pthread_setname_np(name);
+}
+#endif
